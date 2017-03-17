@@ -56,6 +56,7 @@ void setup()
   //Start Setup LED display
         screen.begin(16, 2);
         screen.setRGB(colorR, colorG, colorB);
+        screen.print("Hello World!");
   //Stop Setup LED display
 }
 
