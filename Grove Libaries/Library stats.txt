@@ -1,3 +1,0 @@
-DigitalCompass - 			Works
-Grove_Barometer_Sensor - 		Can't Compile
-Grove_LCD_RGB_Backlight_master - 	Works
