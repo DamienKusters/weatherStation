@@ -42,18 +42,18 @@ void loop()
     for (int thisChar = 0; thisChar < 10; thisChar++)
     {
         lcd.print(thisChar);
-        delay(500);
+        delay(100);
     }
 
     // set the cursor to (16,1):
-    lcd.setCursor(16,1);
+    lcd.setCursor(0,1);
     // set the display to automatically scroll:
-    lcd.autoscroll();
+    //lcd.autoscroll();
     // print from 0 to 9:
     for (int thisChar = 0; thisChar < 10; thisChar++)
     {
         lcd.print(thisChar);
-        delay(500);
+        delay(100);
     }
     // turn off automatic scrolling
     lcd.noAutoscroll();
