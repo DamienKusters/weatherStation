@@ -15,6 +15,10 @@
 #include <HMC5883L.h>     //Compass
 #include <Seeed_BMP280.h> //Thermometer
 #include <rgb_lcd.h>      //LED display
+#include "DHT.h"          //Temperature and Humidity
+#define DHTPIN A0         //Temperature and Humidity
+#define DHTTYPE DHT11     //Temperature and Humidity
+DHT dht(DHTPIN, DHTTYPE);
 
 //Init components
 HMC5883L compass;
@@ -80,6 +84,9 @@ void setup()
         screen.setRGB(colorR, colorG, colorB);
         screen.print("Weather  Station");
   //Stop Setup LED display
+  //Start Setup Temperature and Humidity Sensor
+        dht.begin();
+  //Stop Setup Temperature and Humidity Sensor
 
   pinMode(btnSwitch, INPUT);
 }
@@ -102,7 +109,8 @@ void loop()
   if(displayMode == 2)
   {
     screen.setCursor(0, 1);
-    screen.print("???");
+    screen.print(dht.readHumidity());
+    screen.print("%");
   }
   if(displayMode == 3)
   {
