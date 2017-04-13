@@ -96,52 +96,92 @@ void loop()
   checkTimer();
 
   if(timerMainCountChanged && displayMode == 0)
-  {
     nameSwitch();
-  }
 
-  if(displayMode == 1)
-  {
-    screen.setCursor(0, 1);
-    screen.print(bmp280.getTemperature());
-    screen.print("C");
-  }
-  if(displayMode == 2)
-  {
-    screen.setCursor(0, 1);
-    screen.print(dht.readHumidity());
-    screen.print("%");
-  }
-  if(displayMode == 3)
-  {
-    screen.setCursor(0, 1);
-    screen.print("???");
-  }
-  if(displayMode == 4)
-  {
-    float press;
-    screen.setCursor(0, 1);
-    screen.print(press = bmp280.getPressure());
-    screen.print("Pa");
-  }
-  if(displayMode == 5)
-  {
-    MagnetometerScaled scaled = compass.readScaledAxis();
-    
-    screen.setCursor(0, 1);
-    screen.print((int)scaled.YAxis);
-    screen.print(" ");
-    screen.print((int)scaled.ZAxis);
-    screen.print(" ");
-    screen.print((int)scaled.XAxis);
-    //Y=Yaw | Z=Pitch | X=Roll
-  }
+  //updateDisplay() will check
+  updateDisplay();
   
-  //checkButtonState() will call switchIsPressed()
-  //if conditions apply
+  //checkButtonState() also calls: switchIsPressed()
   checkButtonState();
 
   timerMainCountChanged = false;
+}
+
+void updateDisplay()
+{
+  MagnetometerScaled scaled = compass.readScaledAxis();
+  float press;
+  switch(displayMode)
+  {
+    case 1:
+      screen.setCursor(0, 1);
+      screen.print(bmp280.getTemperature());
+      screen.print("C");
+    break;
+    case 2:
+      screen.setCursor(0, 1);
+      screen.print(dht.readHumidity());
+      screen.print("%");
+    break;
+    case 3:
+      screen.setCursor(0, 1);
+      if(scaled.XAxis > 0)//North half
+      {
+        if(scaled.YAxis < 450 && scaled.YAxis > -390)
+          screen.print("North          ");
+        else if (scaled.YAxis < 510 && scaled.YAxis > 450)
+          screen.print("North-East     ");
+        else if (scaled.YAxis > 510)
+          screen.print("East           ");
+        else if (scaled.YAxis < -820)
+          screen.print("West           ");
+        else if (scaled.YAxis < -390  && scaled.YAxis > -820)
+          screen.print("North-West     ");
+      }
+      if(scaled.XAxis < 0)//South-half
+      {
+        if(scaled.YAxis < 450 && scaled.YAxis > -390)
+          screen.print("South          ");
+        else if (scaled.YAxis < 510 && scaled.YAxis > 450)
+          screen.print("South-East     ");
+        else if (scaled.YAxis > 510)
+          screen.print("East           ");
+        else if (scaled.YAxis < -820)
+          screen.print("West           ");
+        else if (scaled.YAxis < -390  && scaled.YAxis > -820)
+          screen.print("South-West     ");
+      }
+    break;
+    case 4:
+      press = bmp280.getPressure();
+      screen.setCursor(0, 1);
+      screen.print(press);
+      screen.print("Pa");
+    break;
+    case 5:
+      screen.setCursor(0, 1);
+      screen.print((int)scaled.YAxis);
+      screen.print(" ");
+      screen.print((int)scaled.ZAxis);
+      screen.print(" ");
+      screen.print((int)scaled.XAxis);
+      //Y=Yaw | Z=Pitch | X=Roll
+    break;
+    case 6:
+      press = bmp280.getPressure();
+      screen.setCursor(0, 1);
+      if(press < 100500)
+        screen.print("Rain           ");
+      else if(press > 100500 && press < 102500)
+        screen.print("Change         ");
+      else if(press > 102500 && press < 104000)
+        screen.print("Fair           ");
+      else if(press > 104000)
+        screen.print("Dry            ");
+      else
+        screen.print("???            ");
+    break;
+  }
 }
 
 void checkTimer()
@@ -213,6 +253,10 @@ void switchIsPressed()
       screen.print("Yaw,pitch,roll");
       break;
     case 6:
+      screen.setCursor(0, 0);
+      screen.print("Expected weather");
+      break;
+    case 7:
       screen.setCursor(0, 0);
       screen.print("Weather  Station");
       displayMode = 0;
